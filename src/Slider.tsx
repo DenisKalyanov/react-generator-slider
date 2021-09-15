@@ -1,55 +1,62 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import {
-  SliderGeneratorInc,
-  SliderGeneratorDec,
-  SliderGeneratorClass,
-} from "./sliderGenerator";
+import { SliderGeneratorClass } from "./service/sliderGenerator";
 
-const Slider: React.FC<any> = ({ array }: any): JSX.Element => {
-  const generatorObjInc = SliderGeneratorInc(array);
-  const generatorObjDec = SliderGeneratorDec(array);
-  const generatorObj = new SliderGeneratorClass(array);
-
-  const prevSlide = generatorObj.prevButton();
-  let a = prevSlide.next().value;
-
-  const [isVisible, setVisible] = useState(array[0]);
-  const onClickInc = () => {
-    console.log(a);
-    console.log(isVisible);
-
-    setVisible(a);
-  };
-  const onClickDec = () => {
-    setVisible(generatorObjDec.next().value);
-  };
-
-  useEffect(() => {}, []);
+const SliderComponent = (props: any) => {
+  const [item, setItem] = useState("");
 
   useEffect(() => {
-    setVisible(a);
-    setVisible(generatorObjDec.next().value);
-  }, [isVisible]);
+    setItem(props.prevSlide.next().value);
+    setItem(props.nextSlide.next().value);
+  }, []);
+
+  useEffect(() => {
+    setItem(props.prevSlide.next().value);
+    setItem(props.nextSlide.next().value);
+  }, [props.options]);
+
+  const onPrevSlide = () => {
+    setItem(props.prevSlide.next().value);
+  };
+
+  const onNextSlide = () => {
+    setItem(props.nextSlide.next().value);
+  };
 
   return (
-    <div className="Slider">
-      {array.map((item: any) => (
-        <div
-          className={`${isVisible === item ? null : "not-visible"}`}
-          key={item}
+    <div className="slider">
+      <img src={item} alt="" className="slider-image" />
+      <div className="slider-buttons">
+        <button
+          type="button"
+          className="slider-button slider-button__prev"
+          onClick={onPrevSlide}
         >
-          {item}
-        </div>
-      ))}
-
-      <button type="button" onClick={onClickDec}>
-        PREV
-      </button>
-      <button type="button" onClick={onClickInc}>
-        NEXT
-      </button>
+          PREV
+        </button>
+        <button
+          type="button"
+          className="slider-button slider-button__next"
+          onClick={onNextSlide}
+        >
+          NEXT
+        </button>
+      </div>
     </div>
+  );
+};
+
+const Slider = (props: any) => {
+  const generator = new SliderGeneratorClass(props.array, props.options);
+  const prevSlide = generator.prevButton();
+  const nextSlide = generator.nextButton();
+
+  return (
+    <SliderComponent
+      prevSlide={prevSlide}
+      nextSlide={nextSlide}
+      options={props.options}
+    />
   );
 };
 
